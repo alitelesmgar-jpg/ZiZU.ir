@@ -1,0 +1,3009 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZiZU | THE ELITE STUDIO</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;400;700;900&display=swap');
+
+        :root {
+            --neon: #00f2fe;
+            --purple: #7000ff;
+            --bg: #000;
+            --card-bg: #0a0a0c;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --neon-rgb: 0, 242, 254;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-top: env(safe-area-inset-top, 0px);
+        }
+
+        /* همه انیمیشن‌های اصلی (همون قبلی) */
+        @keyframes logo-glitch {
+            0% { transform: translate(0); text-shadow: 2px 2px red, -2px -2px blue; }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); text-shadow: -2px 2px red, 2px -2px blue; }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
+        }
+        @keyframes logo-float {
+            0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 0 5px var(--neon)); }
+            50% { transform: translateY(-10px) scale(1.05); filter: drop-shadow(0 0 20px var(--neon)); }
+        }
+        @keyframes pulse-intense {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(0.98); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes soft-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        @keyframes drill-shake {
+            0% { transform: translate(0); }
+            25% { transform: translate(2px, -2px); }
+            50% { transform: translate(-2px, 2px); }
+            75% { transform: translate(2px, 2px); }
+            100% { transform: translate(0); }
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        @keyframes marquee { from { transform: translateX(100%); } to { transform: translateX(-100%); } }
+        @keyframes wave { from { height: 10%; } to { height: 100%; } }
+
+        /* همه افکت‌های اصلی (همون قبلی) */
+        body.drill-mode .logo { animation: logo-glitch 0.2s infinite; }
+        body.drill-mode .giant-text { animation: pulse-intense 0.1s infinite; }
+        body.drill-mode .drop-card, 
+        body.drill-mode .service-card, 
+        body.drill-mode .est-card, 
+        body.drill-mode .timeline-item { 
+            animation: drill-shake 0.3s infinite; 
+        }
+        body.ambient-mode .logo { animation: logo-float 3s ease-in-out infinite; }
+        body.ambient-mode .drop-card, 
+        body.ambient-mode .service-card, 
+        body.ambient-mode .est-card { 
+            animation: soft-float 4s ease-in-out infinite; 
+        }
+
+        .cursor-aura {
+            position: fixed; 
+            width: 400px; 
+            height: 400px;
+            background: radial-gradient(circle, var(--neon) 0%, transparent 70%);
+            border-radius: 50%; 
+            pointer-events: none; 
+            z-index: 2;
+            opacity: 0.15; 
+            transition: background 0.5s ease;
+            transform: translate(-50%, -50%); 
+            filter: blur(50px);
+        }
+
+        body::before {
+            content: ""; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.05; 
+            pointer-events: none; 
+            z-index: 9999;
+        }
+
+        body.drill-mode { --neon: #ff003c; --purple: #330000; --neon-rgb: 255, 0, 60; }
+        body.ambient-mode { --neon: #00ff88; --purple: #004422; --neon-rgb: 0, 255, 136; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html { scroll-behavior: smooth; }
+        body { 
+            background: var(--bg); 
+            color: #fff; 
+            font-family: 'Vazirmatn', sans-serif; 
+            overflow-x: hidden; 
+            transition: 0.8s ease;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        #scroll-progress { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            height: 3px; 
+            width: 0%; 
+            background: linear-gradient(90deg, var(--neon), var(--purple)); 
+            z-index: 10000; 
+        }
+
+        /* هدر */
+        .header { 
+            position: fixed; 
+            top: 0; 
+            width: 100%; 
+            padding: 25px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            z-index: 1000; 
+            mix-blend-mode: difference;
+        }
+        
+        .logo { 
+            font-size: 1.8rem; 
+            font-weight: 900; 
+            letter-spacing: 8px; 
+            transition: 0.3s; 
+            display: inline-block;
+        }
+        
+        .studio-status { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            font-size: 0.7rem; 
+            font-weight: bold; 
+            background: rgba(0,0,0,0.5); 
+            padding: 5px 12px; 
+            border-radius: 20px; 
+            border: 1px solid var(--border); 
+        }
+        
+        .status-dot { 
+            width: 8px; 
+            height: 8px; 
+            background: #00ff00; 
+            border-radius: 50%; 
+            box-shadow: 0 0 10px #00ff00; 
+            animation: blink 1.5s infinite; 
+        }
+
+        /* Marquee */
+        .marquee { 
+            overflow: hidden; 
+            white-space: nowrap; 
+            background: var(--glass); 
+            padding: 20px 0; 
+            border-top: 1px solid var(--border); 
+            border-bottom: 1px solid var(--border); 
+            margin: 50px 0; 
+        }
+        
+        .marquee-content { 
+            display: inline-block; 
+            animation: marquee 20s linear infinite; 
+        }
+        
+        .marquee-content span { 
+            font-weight: 900; 
+            font-size: 1.5rem; 
+            margin: 0 40px; 
+            opacity: 0.5; 
+            letter-spacing: 3px; 
+        }
+
+        /* Sections */
+        section { 
+            min-height: 100vh; 
+            padding: 100px 8%; 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            z-index: 10; 
+        }
+        
+        .giant-text { 
+            font-size: clamp(3rem, 18vw, 12rem); 
+            font-weight: 900; 
+            line-height: 0.8; 
+            transition: 0.3s; 
+        }
+        
+        .accent-text { 
+            color: var(--neon); 
+            text-shadow: 0 0 30px var(--neon); 
+        }
+
+        /* Reveal Animations */
+        [class*="reveal-"] { 
+            opacity: 0; 
+            transition: 1.2s cubic-bezier(0.2, 1, 0.3, 1); 
+        }
+        
+        .reveal-left { transform: translateX(-80px); }
+        .reveal-right { transform: translateX(80px); }
+        .reveal-up { transform: translateY(80px); }
+        .active { opacity: 1; transform: translate(0); }
+
+        /* Tilt Card Effect (همون قبلی) */
+        .tilt-card { 
+            transform-style: preserve-3d; 
+            transform: perspective(1000px); 
+            transition: transform 0.1s; 
+            position: relative; 
+            overflow: hidden; 
+            border-radius: 20px; 
+        }
+        
+        .shine-layer { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%); 
+            z-index: 2; 
+            pointer-events: none; 
+            opacity: 0; 
+        }
+
+        /* Gallery */
+        .gallery-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            gap: 15px; 
+            margin-top: 30px; 
+        }
+        
+        .gallery-item { 
+            aspect-ratio: 1/1; 
+            background: var(--card-bg); 
+            border: 1px solid var(--border); 
+            cursor: crosshair; 
+        }
+        
+        .gallery-item img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            filter: grayscale(1); 
+            transition: 0.5s; 
+            pointer-events: none;
+        }
+        
+        .gallery-item:hover img { 
+            filter: grayscale(0); 
+            transform: scale(1.1); 
+        }
+
+        /* Services */
+        .services-container { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 20px; 
+            margin-top: 40px; 
+        }
+        
+        .service-card { 
+            background: var(--glass); 
+            border: 1px solid var(--border); 
+            padding: 40px 30px; 
+            border-radius: 30px; 
+            transition: 0.4s; 
+            position: relative; 
+        }
+        
+        .service-card:hover { 
+            background: rgba(255,255,255,0.06); 
+            border-color: var(--neon); 
+        }
+        
+        .service-icon { 
+            font-size: 2.5rem; 
+            margin-bottom: 20px; 
+            display: block; 
+            filter: drop-shadow(0 0 10px var(--neon)); 
+        }
+        
+        .service-card h3 { 
+            font-size: 1.5rem; 
+            margin-bottom: 15px; 
+            color: var(--neon); 
+        }
+        
+        .service-card p { 
+            font-size: 0.9rem; 
+            color: #aaa; 
+            line-height: 1.8; 
+        }
+
+        /* Pricing */
+        .est-card { 
+            background: linear-gradient(145deg, #0f0f12, #050505); 
+            border: 1px solid var(--border); 
+            padding: 40px; 
+            border-radius: 40px; 
+            margin-top: 50px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        .est-option { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 20px; 
+            margin-bottom: 10px; 
+            border-radius: 15px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid transparent;
+            cursor: pointer; 
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        
+        .est-option:hover { 
+            background: rgba(255,255,255,0.05); 
+            transform: translateX(-5px); 
+        }
+        
+        .est-option.selected { 
+            background: rgba(var(--neon-rgb), 0.1); 
+            border-color: var(--neon);
+            box-shadow: 0 0 20px rgba(var(--neon-rgb), 0.1);
+        }
+        
+        .custom-check {
+            width: 24px; 
+            height: 24px; 
+            border: 2px solid var(--border);
+            border-radius: 6px; 
+            position: relative; 
+            transition: 0.3s;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+        }
+        
+        .est-option.selected .custom-check {
+            background: var(--neon); 
+            border-color: var(--neon);
+            box-shadow: 0 0 15px var(--neon);
+        }
+        
+        .custom-check::after {
+            content: '✓'; 
+            color: #000; 
+            font-weight: 900; 
+            font-size: 14px;
+            display: none;
+        }
+        
+        .est-option.selected .custom-check::after { 
+            display: block; 
+        }
+
+        .total-box { 
+            margin-top: 40px; 
+            text-align: center; 
+            padding: 30px; 
+            background: linear-gradient(to bottom, transparent, rgba(var(--neon-rgb), 0.05));
+            border-radius: 30px; 
+            border: 1px dashed var(--neon); 
+            position: relative; 
+            overflow: hidden;
+        }
+        
+        .total-price { 
+            font-size: 4rem; 
+            font-weight: 900; 
+            color: var(--neon); 
+            display: block; 
+            text-shadow: 0 0 30px var(--neon); 
+        }
+
+        /* Timeline */
+        .timeline-container { 
+            margin-top: 50px; 
+            position: relative; 
+            padding-right: 30px; 
+        }
+        
+        .timeline-container::before {
+            content: ''; 
+            position: absolute; 
+            right: 0; 
+            top: 0; 
+            width: 2px; 
+            height: 100%;
+            background: linear-gradient(to bottom, var(--neon), var(--purple), transparent);
+        }
+        
+        .timeline-item { 
+            position: relative; 
+            margin-bottom: 40px; 
+            padding-right: 30px; 
+        }
+        
+        .timeline-dot {
+            position: absolute; 
+            right: -6px; 
+            top: 5px; 
+            width: 14px; 
+            height: 14px;
+            background: var(--bg); 
+            border: 2px solid var(--neon); 
+            border-radius: 50%;
+            z-index: 2; 
+            box-shadow: 0 0 10px var(--neon);
+        }
+        
+        .timeline-content h4 { 
+            color: var(--neon); 
+            font-size: 1.2rem; 
+            margin-bottom: 5px; 
+        }
+        
+        .timeline-content p { 
+            font-size: 0.85rem; 
+            color: #888; 
+        }
+
+        /* Drop Cards */
+        .drop-card { 
+            background: var(--glass); 
+            padding: 30px; 
+            border: 1px solid var(--border); 
+            margin-bottom: 20px; 
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            cursor: pointer; 
+        }
+        
+        .drop-card:active { 
+            transform: scale(0.95); 
+            background: rgba(255,255,255,0.08); 
+        }
+
+        /* Testimonials */
+        .testi-card { 
+            background: var(--glass); 
+            padding: 30px; 
+            border-radius: 25px; 
+            border: 1px solid var(--border); 
+            position: relative; 
+            margin-bottom: 15px; 
+        }
+        
+        .testi-card::before { 
+            content: "“"; 
+            position: absolute; 
+            top: 10px; 
+            right: 20px; 
+            font-size: 4rem; 
+            color: var(--neon); 
+            opacity: 0.2; 
+        }
+
+        /* FAQ */
+        .faq-item { 
+            background: var(--glass); 
+            border: 1px solid var(--border); 
+            border-radius: 15px; 
+            margin-bottom: 10px; 
+            padding: 20px; 
+            cursor: pointer; 
+        }
+        
+        .faq-item p { 
+            display: none; 
+            margin-top: 10px; 
+            color: #888; 
+        }
+        
+        .faq-item.open p { 
+            display: block; 
+        }
+
+        /* Spin Badge */
+        .spin-badge { 
+            position: fixed; 
+            bottom: 100px; 
+            left: 30px; 
+            width: 100px; 
+            height: 100px; 
+            z-index: 1001; 
+            mix-blend-mode: exclusion; 
+        }
+        
+        .spin-text { 
+            animation: spin 10s linear infinite; 
+            fill: var(--neon); 
+            font-size: 11px; 
+            font-weight: bold; 
+        }
+
+        /* Mode Switch */
+        .mode-switch { 
+            position: fixed; 
+            top: 100px; 
+            left: 20px; 
+            z-index: 2000; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+        }
+        
+        .mode-btn { 
+            width: 45px; 
+            height: 45px; 
+            border-radius: 50%; 
+            border: 1px solid #fff; 
+            cursor: pointer; 
+            font-size: 8px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: #000; 
+            color: #fff; 
+            backdrop-filter: blur(10px); 
+            transition: 0.3s; 
+        }
+
+        /* Waveform */
+        .waveform-visual { 
+            width: 100%; 
+            height: 50px; 
+            display: flex; 
+            align-items: flex-end; 
+            gap: 3px; 
+            margin-top: 15px; 
+        }
+        
+        .waveform-bar { 
+            flex: 1; 
+            background: var(--neon); 
+            border-radius: 5px; 
+            animation: wave 1s infinite alternate; 
+        }
+
+        /* Social Cards */
+        .social-card { 
+            background: var(--glass); 
+            border: 1px solid var(--border); 
+            padding: 20px; 
+            border-radius: 15px; 
+            text-align: center; 
+            text-decoration: none; 
+            color: #fff; 
+            font-weight: bold; 
+            transition: 0.3s; 
+        }
+        
+        .social-card:hover { 
+            background: var(--neon); 
+            color: #000; 
+        }
+
+        /* Mobile Navigation (اضافه کردم بدون حذف چیزی) */
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 12, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            color: #aaa;
+            font-size: 0.7rem;
+            transition: 0.3s;
+            padding: 5px;
+        }
+        
+        .nav-item.active {
+            color: var(--neon);
+        }
+        
+        .nav-item span {
+            font-size: 1.2rem;
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* ==================== NEW TESLA-STYLE SLIDER STYLES ==================== */
+        .tesla-slider-section {
+            position: relative;
+            min-height: 100vh;
+            padding: 100px 8%;
+            background: var(--bg);
+            overflow: hidden;
+        }
+
+        .tesla-slider-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            height: 100%;
+        }
+
+        .tesla-slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+            padding: 0 20px;
+        }
+
+        .tesla-slider-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+        }
+
+        .tesla-slider-nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        .tesla-nav-item {
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tesla-nav-item.active {
+            background: rgba(var(--neon-rgb), 0.1);
+            color: var(--neon);
+            border: 1px solid var(--neon);
+        }
+
+        .tesla-nav-item:hover:not(.active) {
+            color: var(--neon);
+        }
+
+        .tesla-slide {
+            position: relative;
+            display: none;
+            align-items: center;
+            height: 70vh;
+        }
+
+        .tesla-slide.active {
+            display: flex;
+        }
+
+        .tesla-slide-content {
+            flex: 1;
+            z-index: 2;
+            padding-right: 50px;
+        }
+
+        .tesla-slide-name {
+            font-size: 4.5rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            line-height: 1;
+        }
+
+        .tesla-slide-desc {
+            font-size: 1.1rem;
+            color: #aaa;
+            max-width: 500px;
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+
+        .tesla-slide-stats {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .tesla-stat-item {
+            text-align: center;
+        }
+
+        .tesla-stat-value {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--neon);
+            display: block;
+            line-height: 1;
+        }
+
+        .tesla-stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .tesla-button {
+            position: relative;
+            display: inline-block;
+            padding: 15px 40px;
+            background: transparent;
+            border: 2px solid var(--slide-color);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .tesla-button:hover {
+            background: var(--slide-color);
+            color: #000;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(var(--slide-rgb), 0.3);
+        }
+
+        .tesla-button-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200%;
+            height: 300%;
+            background: radial-gradient(ellipse at center, var(--slide-color) 1%, transparent 80%);
+            opacity: 0;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .tesla-button:hover .tesla-button-glow {
+            opacity: 0.2;
+        }
+
+        .tesla-slide-visual {
+            flex: 1;
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tesla-waveform {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            padding: 0 10px;
+            opacity: 0.55;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .tesla-waveform-bar {
+            flex: 1 1 auto;
+            max-width: 8px;
+            min-width: 3px;
+            background: linear-gradient(to top, var(--slide-color), transparent);
+            border-radius: 4px 4px 0 0;
+            animation: tesla-wave 1.5s infinite ease-in-out;
+        }
+
+        @keyframes tesla-wave {
+            0%, 100% { height: 20px; }
+            50% { height: 150px; }
+        }
+
+        .tesla-slide-bg {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            right: -100px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: -1;
+        }
+
+        .tesla-slide-bg::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(var(--slide-rgb), 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .tesla-slide-number {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 8rem;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.03);
+            z-index: -1;
+        }
+
+        /* ==================== RESPONSIVE SLIDER ==================== */
+        @media (max-width: 768px) {
+            .tesla-slider-section {
+                padding: 80px 20px;
+                min-height: 90vh;
+            }
+
+            .tesla-slider-header {
+                flex-direction: column;
+                gap: 30px;
+                margin-bottom: 40px;
+            }
+
+            .tesla-slider-title {
+                font-size: 2.5rem;
+                text-align: center;
+            }
+
+            .tesla-slider-nav {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .tesla-nav-item {
+                font-size: 1rem;
+                padding: 8px 16px;
+            }
+
+            .tesla-slide {
+                flex-direction: column;
+                height: auto;
+                gap: 40px;
+                text-align: center;
+            }
+
+            .tesla-slide-content {
+                padding-right: 0;
+            }
+
+            .tesla-slide-name {
+                font-size: 3rem;
+            }
+
+            .tesla-slide-stats {
+                justify-content: center;
+            }
+
+            .tesla-slide-bg {
+                width: 400px;
+                height: 400px;
+                right: -50px;
+            }
+
+            .tesla-slide-visual {
+                width: 100%;
+                height: 140px;
+                flex: none;
+            }
+
+            .tesla-waveform {
+                height: 140px;
+                gap: 3px;
+                padding: 0 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tesla-slide-stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .tesla-slide-name {
+                font-size: 2.5rem;
+            }
+
+            .tesla-slide-bg {
+                width: 300px;
+                height: 300px;
+            }
+        }
+
+        /* Responsive Design (بهینه شده برای موبایل بدون حذف افکت‌ها) */
+        @media (max-width: 768px) {
+            /* فقط تنظیمات سایز و فاصله، افکت‌ها همچنان فعال */
+            .cursor-aura { 
+                width: 250px; 
+                height: 250px; 
+                filter: blur(30px);
+            }
+            
+            .giant-text { 
+                font-size: clamp(2.5rem, 15vw, 4rem); 
+            }
+            
+            .header {
+                padding: 15px 20px;
+                background: rgba(0, 0, 0, 0.8);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+                letter-spacing: 4px;
+            }
+            
+            .studio-status {
+                font-size: 0.65rem;
+                padding: 4px 10px;
+            }
+            
+            .mobile-nav {
+                display: flex;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            section {
+                padding: 80px 20px;
+                min-height: auto;
+            }
+            
+            .services-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .service-card {
+                padding: 25px 20px;
+                border-radius: 20px;
+            }
+            
+            .est-card {
+                padding: 25px;
+                border-radius: 25px;
+            }
+            
+            .total-price {
+                font-size: 2.5rem;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .mode-switch {
+                top: auto;
+                bottom: 120px;
+                right: 20px;
+            }
+            
+            .spin-badge {
+                bottom: 70px;
+                left: 20px;
+                width: 60px;
+                height: 60px;
+            }
+            
+            .marquee-content span {
+                font-size: 1.1rem;
+                margin: 0 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cursor-aura { 
+                width: 200px; 
+                height: 200px; 
+            }
+            
+            .giant-text { 
+                font-size: clamp(2rem, 12vw, 3rem); 
+            }
+            
+            .header {
+                padding: 12px 15px;
+            }
+            
+            .logo {
+                font-size: 1.3rem;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .mode-btn {
+                width: 38px;
+                height: 38px;
+            }
+        }
+
+        /* ==================== MOBILE LAYOUT OVERHAUL ==================== */
+        @media (max-width: 768px) {
+
+            .header {
+                padding: calc(var(--safe-top) + 14px) 18px 14px;
+                background: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.4) 80%, transparent);
+                backdrop-filter: blur(14px);
+                border-bottom: none;
+            }
+
+            .studio-status {
+                font-size: 0.6rem;
+                padding: 5px 10px 5px 8px;
+                gap: 6px;
+            }
+
+            .studio-status span {
+                display: none;
+            }
+
+            .studio-status::after {
+                content: 'ONLINE';
+                font-size: 0.6rem;
+                letter-spacing: 1px;
+            }
+
+            .mode-switch {
+                top: calc(var(--safe-top) + 14px);
+                left: 14px;
+                bottom: auto;
+                right: auto;
+                flex-direction: row;
+                gap: 6px;
+                background: rgba(8, 8, 10, 0.7);
+                backdrop-filter: blur(16px);
+                border: 1px solid rgba(255, 0, 60, 0.35);
+                padding: 7px 14px 7px 7px;
+                border-radius: 30px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            }
+
+            .mode-btn {
+                width: 30px;
+                height: 30px;
+                font-size: 0;
+                border-width: 0;
+                background: linear-gradient(135deg, #ff003c, #7a0020);
+                box-shadow: 0 0 12px rgba(255,0,60,0.6);
+                position: relative;
+                flex-shrink: 0;
+            }
+
+            .mode-btn::after {
+                content: '🔥';
+                font-size: 13px;
+            }
+
+            .mode-switch::after {
+                content: 'DRILL MODE';
+                font-size: 0.62rem;
+                font-weight: 800;
+                letter-spacing: 1.5px;
+                color: #ff003c;
+                white-space: nowrap;
+            }
+
+            .spin-badge {
+                display: none;
+            }
+
+            .mobile-nav {
+                padding: 10px 6px calc(10px + var(--safe-bottom));
+                background: rgba(6, 6, 8, 0.92);
+                border-top: 1px solid var(--border);
+                box-shadow: 0 -8px 30px rgba(0,0,0,0.4);
+            }
+
+            .nav-item {
+                position: relative;
+                font-size: 0.62rem;
+                padding: 6px 4px;
+                border-radius: 14px;
+                transition: 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+
+            .nav-item span {
+                font-size: 1.25rem;
+                transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+
+            .nav-item.active {
+                background: rgba(var(--neon-rgb), 0.1);
+            }
+
+            .nav-item.active span {
+                transform: translateY(-3px) scale(1.1);
+                filter: drop-shadow(0 0 8px var(--neon));
+            }
+
+            .nav-item.active::before {
+                content: '';
+                position: absolute;
+                top: 2px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 4px;
+                height: 4px;
+                border-radius: 50%;
+                background: var(--neon);
+                box-shadow: 0 0 8px var(--neon);
+            }
+
+            #connect {
+                margin-bottom: 160px !important;
+            }
+        }
+    </style>
+    <style id="new-features-styles">
+        /* ============================================================
+           STORY MODE
+           ============================================================ */
+        .story-launcher {
+            position: fixed;
+            top: calc(var(--safe-top) + 14px);
+            left: 162px;
+            z-index: 1950;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px 8px 8px;
+            background: rgba(8, 8, 10, 0.7);
+            border: 1px solid rgba(var(--neon-rgb), 0.4);
+            border-radius: 30px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 8px 24px rgba(var(--neon-rgb), 0.15);
+            cursor: pointer;
+            animation: story-launcher-pulse 2.4s ease-in-out infinite;
+        }
+
+        @keyframes story-launcher-pulse {
+            0%, 100% { box-shadow: 0 8px 24px rgba(var(--neon-rgb), 0.15); }
+            50% { box-shadow: 0 8px 30px rgba(var(--neon-rgb), 0.4); }
+        }
+
+        .story-launcher-ring {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, var(--neon), var(--purple), var(--neon));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: spin 3s linear infinite;
+            flex-shrink: 0;
+        }
+
+        .story-launcher-ring::after {
+            content: '▶';
+            width: 24px;
+            height: 24px;
+            background: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: var(--neon);
+            animation: spin 3s linear infinite reverse;
+        }
+
+        .story-launcher-text {
+            font-size: 0.68rem;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .story-launcher { display: flex; }
+        }
+
+        .story-mode {
+            position: fixed;
+            inset: 0;
+            z-index: 5000;
+            background: #000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .story-mode.open {
+            display: flex;
+        }
+
+        .story-progress-bar {
+            position: absolute;
+            top: calc(var(--safe-top) + 10px);
+            left: 10px;
+            right: 10px;
+            z-index: 30;
+            display: flex;
+            gap: 5px;
+        }
+
+        .story-progress-seg {
+            flex: 1;
+            height: 3px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.25);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .story-progress-fill {
+            position: absolute;
+            top: 0; right: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--purple), var(--neon));
+            border-radius: 3px;
+            box-shadow: 0 0 8px var(--neon);
+        }
+
+        .story-progress-seg.done .story-progress-fill { width: 100%; }
+
+        .story-topbar {
+            position: absolute;
+            top: calc(var(--safe-top) + 26px);
+            left: 16px;
+            right: 16px;
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .story-topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            font-size: 0.95rem;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.8);
+        }
+
+        .story-topbar-brand .dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--neon);
+            box-shadow: 0 0 10px var(--neon);
+            animation: blink 1.5s infinite;
+        }
+
+        .story-close {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        .story-slide-label {
+            position: absolute;
+            top: calc(var(--safe-top) + 64px);
+            left: 16px;
+            z-index: 30;
+            font-size: 0.62rem;
+            letter-spacing: 3px;
+            color: var(--neon);
+            opacity: 0.8;
+            font-weight: 700;
+        }
+
+        .story-track {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .story-slide {
+            flex: 0 0 100%;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 100px 24px 120px;
+            overflow: hidden;
+        }
+
+        .story-slide-bg-glow {
+            position: absolute;
+            inset: -20%;
+            background: radial-gradient(circle at 50% 30%, rgba(var(--neon-rgb), 0.22), transparent 60%);
+            z-index: 0;
+            animation: story-glow-drift 8s ease-in-out infinite;
+        }
+
+        @keyframes story-glow-drift {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(-4%, 3%) scale(1.15); }
+        }
+
+        .story-slide-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .story-eyebrow {
+            display: inline-block;
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            font-weight: 800;
+            color: var(--neon);
+            border: 1px solid rgba(var(--neon-rgb), 0.4);
+            background: rgba(var(--neon-rgb), 0.08);
+            padding: 5px 14px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        .story-title {
+            font-size: clamp(2.4rem, 12vw, 3.4rem);
+            font-weight: 900;
+            line-height: 0.95;
+            margin-bottom: 18px;
+            opacity: 0;
+            transform: translateY(24px);
+        }
+
+        .story-desc {
+            font-size: 0.95rem;
+            line-height: 1.9;
+            color: #bbb;
+            max-width: 420px;
+            margin-bottom: 28px;
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        .story-stats-row {
+            display: flex;
+            gap: 22px;
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        .story-stat b {
+            display: block;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--neon);
+            text-shadow: 0 0 20px rgba(var(--neon-rgb), 0.5);
+        }
+
+        .story-stat span {
+            font-size: 0.65rem;
+            color: #777;
+            letter-spacing: 1px;
+        }
+
+        .story-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 28px;
+            border-radius: 50px;
+            background: linear-gradient(135deg, var(--neon), var(--purple));
+            color: #000;
+            font-weight: 900;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 10px 30px rgba(var(--neon-rgb), 0.35);
+            opacity: 0;
+            transform: translateY(18px) scale(0.95);
+            border: none;
+        }
+
+        .story-slide.animate-in .story-eyebrow,
+        .story-slide.animate-in .story-title,
+        .story-slide.animate-in .story-desc,
+        .story-slide.animate-in .story-stats-row,
+        .story-slide.animate-in .story-cta {
+            opacity: 1;
+            transform: translate(0) scale(1);
+            transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .story-slide.animate-in .story-eyebrow { transition-delay: 0.1s; }
+        .story-slide.animate-in .story-title { transition-delay: 0.2s; }
+        .story-slide.animate-in .story-desc { transition-delay: 0.32s; }
+        .story-slide.animate-in .story-stats-row { transition-delay: 0.42s; }
+        .story-slide.animate-in .story-cta { transition-delay: 0.52s; }
+
+        .story-tap-zone {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 34%;
+            z-index: 10;
+        }
+        .story-tap-zone.left { left: 0; }
+        .story-tap-zone.right { right: 0; }
+
+        .story-swipe-hint {
+            position: absolute;
+            bottom: calc(30px + var(--safe-bottom));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .story-swipe-hint .arrow {
+            animation: story-arrow-bounce 1.4s ease-in-out infinite;
+        }
+
+        @keyframes story-arrow-bounce {
+            0%, 100% { transform: translateX(0); opacity: 0.4; }
+            50% { transform: translateX(-6px); opacity: 1; }
+        }
+
+        .story-particles {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .story-particle {
+            position: absolute;
+            border-radius: 50%;
+            background: var(--neon);
+            opacity: 0.5;
+            filter: blur(1px);
+            animation: story-particle-float linear infinite;
+        }
+
+        @keyframes story-particle-float {
+            0% { transform: translateY(20px); opacity: 0; }
+            15% { opacity: 0.6; }
+            85% { opacity: 0.4; }
+            100% { transform: translateY(-100vh); opacity: 0; }
+        }
+
+        /* ============================================================
+           چت‌بات سفارش‌گیر
+           ============================================================ */
+        .chat-fab {
+            position: fixed;
+            bottom: calc(140px + var(--safe-bottom));
+            right: 18px;
+            z-index: 1900;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--purple), var(--neon));
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(var(--neon-rgb), 0.4), 0 0 0 1px rgba(255,255,255,0.1) inset;
+            cursor: pointer;
+            animation: chat-fab-float 3.2s ease-in-out infinite;
+        }
+
+        @keyframes chat-fab-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .chat-fab svg { width: 26px; height: 26px; }
+
+        .chat-fab-badge {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ff003c;
+            border: 2px solid #000;
+            font-size: 0.55rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            animation: blink 2s infinite;
+        }
+
+        .chat-window {
+            position: fixed;
+            inset: 0;
+            z-index: 6000;
+            display: none;
+            flex-direction: column;
+            background: #050506;
+        }
+
+        .chat-window.open { display: flex; }
+
+        .chat-header {
+            position: relative;
+            padding: calc(var(--safe-top) + 18px) 20px 18px;
+            background: linear-gradient(135deg, rgba(112,0,255,0.15), rgba(0,242,254,0.1));
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            overflow: hidden;
+        }
+
+        .chat-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.06;
+        }
+
+        .chat-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--neon), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: #000;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chat-header-info { flex: 1; position: relative; z-index: 1; }
+        .chat-header-info h4 { font-size: 0.95rem; font-weight: 900; letter-spacing: 0.5px; }
+        .chat-header-info p { font-size: 0.68rem; color: var(--neon); display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+        .chat-header-info p .dot { width: 6px; height: 6px; border-radius: 50%; background: #0f0; box-shadow: 0 0 6px #0f0; }
+
+        .chat-close-btn {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border);
+            color: #fff;
+            font-size: 1.1rem;
+            display: flex; align-items: center; justify-content: center;
+            position: relative; z-index: 1;
+        }
+
+        .chat-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-msg {
+            max-width: 82%;
+            padding: 13px 17px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            opacity: 0;
+            transform: translateY(12px);
+            animation: chat-msg-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @keyframes chat-msg-in {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-msg.bot {
+            align-self: flex-start;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 6px;
+        }
+
+        .chat-msg.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--neon), var(--purple));
+            color: #000;
+            font-weight: 600;
+            border-bottom-right-radius: 6px;
+        }
+
+        .chat-msg.summary {
+            align-self: stretch;
+            max-width: 100%;
+            background: linear-gradient(145deg, #0f0f12, #050505);
+            border: 1px solid rgba(var(--neon-rgb), 0.3);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        .chat-msg.summary .summary-title {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: var(--neon);
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .chat-msg.summary .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border);
+            font-size: 0.8rem;
+        }
+
+        .chat-msg.summary .summary-row:last-of-type { border-bottom: none; }
+
+        .chat-msg.summary .summary-total {
+            margin-top: 12px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .chat-msg.summary .summary-total b {
+            font-size: 1.6rem;
+            color: var(--neon);
+            text-shadow: 0 0 20px rgba(var(--neon-rgb), 0.4);
+        }
+
+        .chat-typing {
+            align-self: flex-start;
+            display: flex;
+            gap: 4px;
+            padding: 14px 18px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            border-bottom-left-radius: 6px;
+        }
+
+        .chat-typing span {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--neon);
+            animation: chat-typing-bounce 1.2s ease-in-out infinite;
+        }
+        .chat-typing span:nth-child(2) { animation-delay: 0.15s; }
+        .chat-typing span:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes chat-typing-bounce {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-6px); opacity: 1; }
+        }
+
+        .chat-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-self: stretch;
+            padding: 4px 0 0;
+        }
+
+        .chat-option-btn {
+            padding: 11px 18px;
+            border-radius: 30px;
+            background: rgba(var(--neon-rgb), 0.07);
+            border: 1px solid rgba(var(--neon-rgb), 0.35);
+            color: var(--neon);
+            font-size: 0.8rem;
+            font-weight: 700;
+            transition: 0.25s;
+            opacity: 0;
+            transform: translateY(10px) scale(0.95);
+            animation: chat-msg-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        .chat-option-btn:active {
+            background: var(--neon);
+            color: #000;
+            transform: scale(0.94);
+        }
+
+        .chat-footer {
+            padding: 12px 16px calc(14px + var(--safe-bottom));
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+            background: rgba(10,10,12,0.8);
+            backdrop-filter: blur(20px);
+        }
+
+        .chat-restart-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 16px;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            color: #aaa;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .chat-cta-final {
+            flex: 2;
+            padding: 14px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--neon), var(--purple));
+            border: none;
+            color: #000;
+            font-size: 0.85rem;
+            font-weight: 900;
+        }
+
+        /* صیقل بصری اضافه */
+        @media (max-width: 768px) {
+            .service-card, .est-card, .drop-card, .testi-card, .faq-item {
+                position: relative;
+            }
+            .service-card::after, .drop-card::after {
+                content: '';
+                position: absolute;
+                inset: 0;
+                border-radius: inherit;
+                padding: 1px;
+                background: linear-gradient(135deg, rgba(var(--neon-rgb),0.35), transparent 40%, transparent 60%, rgba(112,0,255,0.25));
+                -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                -webkit-mask-composite: xor;
+                mask-composite: exclude;
+                pointer-events: none;
+                opacity: 0.7;
+            }
+
+            .giant-text.reveal-left, .giant-text.reveal-right {
+                letter-spacing: -2px;
+            }
+
+            .tesla-slider-title { letter-spacing: -1px; }
+
+            .tesla-button:active, .social-card:active, .est-option:active {
+                transform: scale(0.96);
+            }
+        }
+
+        /* بهبود Performance برای موبایل بدون حذف افکت‌ها */
+        @media (hover: none) {
+            /* روی موبایل hover نداریم ولی افکت‌ها باقی می‌مانند */
+            .tilt-card:hover {
+                transform: none;
+            }
+            
+            /* فقط برای لمسی‌ها */
+            button, 
+            .cta-btn,
+            .mode-btn {
+                min-height: 44px;
+            }
+        }
+
+        /* قابلیت‌های لمسی */
+        @media (pointer: coarse) {
+            /* بهبود برای تاچ اسکرین بدون حذف افکت */
+            .est-option {
+                padding: 15px;
+                min-height: 60px;
+            }
+            
+            .faq-item {
+                padding: 15px;
+                min-height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- همه المان‌های اصلی (همون قبلی) -->
+    <div class="cursor-aura" id="aura"></div>
+    <div id="scroll-progress"></div>
+
+    <div class="mode-switch">
+        <div class="mode-btn" id="btn-drill" onclick="setTheme('drill')" style="border-color: #ff003c;">DRILL</div>
+    </div>
+
+    <div class="spin-badge" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <svg viewBox="0 0 100 100"><defs><path id="cPath" d="M 50,50 m -37,0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0"/></defs>
+            <text><textPath xlink:href="#cPath" class="spin-text">• ZiZU STUDIO • ELITE SOUNDS •</textPath></text>
+        </svg>
+    </div>
+
+    <!-- ==================== STORY MODE LAUNCHER ==================== -->
+    <div class="story-launcher" id="story-launcher" onclick="openStoryMode()">
+        <div class="story-launcher-ring"></div>
+        <span class="story-launcher-text">استوری</span>
+    </div>
+
+    <!-- ==================== STORY MODE (تمام‌صفحه، موبایل) ==================== -->
+    <div class="story-mode" id="story-mode">
+        <div class="story-progress-bar" id="story-progress-bar"></div>
+
+        <div class="story-topbar">
+            <div class="story-topbar-brand"><span class="dot"></span> ZiZU</div>
+            <div class="story-close" onclick="closeStoryMode()">✕</div>
+        </div>
+
+        <div class="story-track" id="story-track"></div>
+
+        <div class="story-tap-zone left" onclick="storyPrev()"></div>
+        <div class="story-tap-zone right" onclick="storyNext()"></div>
+
+        <div class="story-swipe-hint"><span class="arrow">◄</span> سوایپ کن برای ادامه</div>
+    </div>
+
+    <!-- ==================== ELITE A&R CHATBOT ==================== -->
+    <button class="chat-fab" id="chat-fab" onclick="openChat()" aria-label="چت با دستیار سفارش">
+        <span class="chat-fab-badge">1</span>
+        <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 2C6.48 2 2 6.03 2 11c0 2.6 1.23 4.94 3.2 6.6C5.06 19.1 4.5 20.5 3.5 21.5c1.8.2 3.6-.3 5.1-1.2 1.05.3 2.2.5 3.4.5 5.52 0 10-4.03 10-9S17.52 2 12 2z" fill="#000"/>
+            <circle cx="8.5" cy="11" r="1.3" fill="#0ff2fe"/>
+            <circle cx="12" cy="11" r="1.3" fill="#0ff2fe"/>
+            <circle cx="15.5" cy="11" r="1.3" fill="#0ff2fe"/>
+        </svg>
+    </button>
+
+    <div class="chat-window" id="chat-window">
+        <div class="chat-header">
+            <div class="chat-avatar">Z</div>
+            <div class="chat-header-info">
+                <h4>دستیار سفارش ZiZU</h4>
+                <p><span class="dot"></span> آنلاین و آماده مشاوره</p>
+            </div>
+            <div class="chat-close-btn" onclick="closeChat()">✕</div>
+        </div>
+        <div class="chat-body" id="chat-body"></div>
+        <div class="chat-footer" id="chat-footer" style="display:none;">
+            <button class="chat-restart-btn" onclick="restartChat()">شروع دوباره</button>
+            <button class="chat-cta-final" onclick="finalizeChatOrder()">ثبت نهایی سفارش</button>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation (اضافه جدید) -->
+    <nav class="mobile-nav">
+        <a href="#hero" class="nav-item active">
+            <span>🏠</span>
+            خانه
+        </a>
+        <a href="#tesla-slider" class="nav-item">
+            <span>🎵</span>
+            سبک‌ها
+        </a>
+        <a href="#services" class="nav-item">
+            <span>🎛️</span>
+            خدمات
+        </a>
+        <a href="#roadmap" class="nav-item">
+            <span>📈</span>
+            فرآیند
+        </a>
+        <a href="#connect" class="nav-item">
+            <span>📞</span>
+            ارتباط
+        </a>
+    </nav>
+
+    <header class="header">
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+        <div class="logo">ZiZU</div>
+        <div class="studio-status"><div class="status-dot"></div><span>AVAILABLE FOR HIRE</span></div>
+    </header>
+
+    <!-- ==================== HERO SECTION ==================== -->
+    <section id="hero">
+        <h1 class="giant-text reveal-left">PURE</h1>
+        <h1 class="giant-text accent-text reveal-right">ENERGY</h1>
+        <p class="reveal-up" style="margin-top: 20px; color: #666;">طراحی فرکانس‌هایی که برند شما را به صدا در می‌آورند.</p>
+    </section>
+
+    <!-- ==================== TESLA-STYLE GENRE SLIDER ==================== -->
+    <section class="tesla-slider-section" id="tesla-slider">
+        <div class="tesla-slider-container">
+            <div class="tesla-slider-header">
+                <h2 class="tesla-slider-title">SIGNATURE <span class="accent-text">GENRES</span></h2>
+                <div class="tesla-slider-nav">
+                    <div class="tesla-nav-item active" data-slide="0" onclick="changeSlide(0)">DRILL</div>
+                    <div class="tesla-nav-item" data-slide="1" onclick="changeSlide(1)">TRAP</div>
+                    <div class="tesla-nav-item" data-slide="2" onclick="changeSlide(2)">HIP-HOP</div>
+                    <div class="tesla-nav-item" data-slide="3" onclick="changeSlide(3)">POP</div>
+                </div>
+            </div>
+
+            <!-- Slide 1: DRILL -->
+            <div class="tesla-slide active" data-slide="0" data-color="#00f2fe" data-rgb="0, 242, 254">
+                <div class="tesla-slide-content">
+                    <h3 class="tesla-slide-name">DARK DRILL</h3>
+                    <p class="tesla-slide-desc">
+                        ترکیب تاریک و اتمسفریک از سمپل‌های مینیمال با کیک‌های قدرتمند و بیس لاین‌های فراگیر.
+                        مناسب برای ترک‌های خیابانی و وایب‌های شهری.
+                    </p>
+                    <div class="tesla-slide-stats">
+                        <div class="tesla-stat-item">
+                            <span class="tesla-stat-value" id="bpm-0">140</span>
+                            <span class="tesla-stat-label">BPM</span>
+                        </div>
+                        <div class="tesla-stat-item">
+                            <span class="tesla-stat-value" id="delivery-0">3</span>
+                            <span class="tesla-stat-label">روز تحویل</span>
+                        </div>
+                        <div class="tesla-stat-item">
+                            <span class="tesla-stat-value" id="complexity-0">95%</span>
+                            <span class="tesla-stat-label">پیچیدگی</span>
+                        </div>
+                    </div>
+                    <button class="tesla-button" onclick="orderGenre('drill')">
+                        سفارش بیت DRILL
+                        <div class="tesla-button-glow"></div>
+                    </button>
+                </div>
+                <div class="tesla-slide-visual">
+                    <div class="tesla-waveform" id="waveform-0"></div>
+                    <div class="tesla-slide-bg"></div>
+                    <div class="tesla-slide-number">01</div>
+                </div>
+            </div>
+
+            <!-- Slide 2: TRAP -->
+            <div class="tesla-slide" data-slide="1" data-color="#ff003c" data-rgb="255, 0, 60">
+                <div class="tesla-slide-content">
+                    <h3 class="tesla-slide-name">NEON TRAP</h3>
+                    <p class="tesla-slide-desc">
+                        لیدهای سینثوی براق همراه با 808های قدرتمند و هت‌های تند. 
+                        فضای آینده‌نگرانه و انرژی بالا برای ترک‌های مدرن.
+                    </p>
+                    <div class="tesla-slide-stats">
+                        <div class="tesla-stat-item">
+                            <span class="tesla-stat-value" id="bpm-1">150</span>
+                            <span class="tesla-stat-label">BPM</span>
+                        </div>
+                        <div class="tesla-stat-item">
+                            <span class="tesla-stat-value" id="delivery-1">4</span>
+                            <span class="tesla-stat-label">روز تحویل</span>
+                        </div>
+                        <div class="tesla-stat-item">
+                            <span class="tesla-stat-value" id="complexity-1">88%</span>
+                            <span class="tesla-stat-label">پیچیدگی</span>
+                        </div>
+                    </div>
+                    <button class="tesla-button" onclick="orderGenre('trap')">
+                        سفارش بیت TRAP
+                        <div class="tesla-button-glow"></div>
+                    </button>
+                </div>
+                <div class="tesla-slide-visual">
+                    <div class="tesla-waveform" id="waveform-1"></div>
+                    <div class="tesla-slide-bg"></div>
+                    <div class="tesla-slide-number">02</div>
+                </div>
+            </div>
+
+            <!-- Slide 3: HIP-HOP -->
+            <div class="tesla-slide" data-slide="2" data-color="#7000ff" data-rgb="112, 0, 255">
+                <div class="tesla-slide-content">
+                    <h3 class="tesla-slide-name">BOOM BAP</h3>
+                    <p class="tesla-slide-desc">
+                        بازگشت به ریشه‌ها با درام‌های گرم و سمپل‌های وینتایج. 
+                        احساسات ناب و فضای کلاسیک هیپ‌هاپ دهه 90.
+                    </p>
+                    <div class="tesla-slide-stats">
+                        <div class="tesla-stat-item">
+                            <span class="tesla-stat-value" id="bpm-2">95</span>
+                            <span class="tesla-stat-label">BPM</span>
+                        </div>
+                        <div class="tesla-stat-item">
+                            <span class="tesla-stat-value" id="delivery-2">5</span>
+                            <span class="tesla-stat-label">روز تحویل</span>
+                        </div>
+                        <div class="tesla-stat-item">
+                            <span class="tesla-stat-value" id="complexity-2">75%</span>
+                            <span class="tesla-stat-label">پیچیدگی</span>
+                        </div>
+                    </div>
+                    <button class="tesla-button" onclick="orderGenre('hiphop')">
+                        سفارش بیت HIP-HOP
+                        <div class="tesla-button-glow"></div>
+                    </button>
+                </div>
+                <div class="tesla-slide-visual">
+                    <div class="tesla-waveform" id="waveform-2"></div>
+                    <div class="tesla-slide-bg"></div>
+                    <div class="tesla-slide-number">03</div>
+                </div>
+            </div>
+
+            <!-- Slide 4: POP -->
+            <div class="tesla-slide" data-slide="3" data-color="#00ff88" data-rgb="0, 255, 136">
+                <div class="tesla-slide-content">
+                    <h3 class="tesla-slide-name">SYNTHWAVE POP</h3>
+                    <p class="tesla-slide-desc">
+                        ترکیب ملودی‌های گیرا با المان‌های سینثوی و ترنزیشن‌های مدرن.
+                        مناسب برای ترک‌های رادیویی و محتوای ویرال.
+                    </p>
+                    <div class="tesla-slide-stats">
+                        <div class="tesla-stat-item">
+                            <span class="tesla-stat-value" id="bpm-3">128</span>
+                            <span class="tesla-stat-label">BPM</span>
+                        </div>
+                        <div class="tesla-stat-item">
+                            <span class="tesla-stat-value" id="delivery-3">6</span>
+                            <span class="tesla-stat-label">روز تحویل</span>
+                        </div>
+                        <div class="tesla-stat-item">
+                            <span class="tesla-stat-value" id="complexity-3">82%</span>
+                            <span class="tesla-stat-label">پیچیدگی</span>
+                        </div>
+                    </div>
+                    <button class="tesla-button" onclick="orderGenre('pop')">
+                        سفارش بیت POP
+                        <div class="tesla-button-glow"></div>
+                    </button>
+                </div>
+                <div class="tesla-slide-visual">
+                    <div class="tesla-waveform" id="waveform-3"></div>
+                    <div class="tesla-slide-bg"></div>
+                    <div class="tesla-slide-number">04</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== SERVICES SECTION ==================== -->
+    <section id="services">
+        <h2 class="reveal-left" style="font-size: 3rem; font-weight: 900;">WHAT WE <span class="accent-text">DO</span></h2>
+        <div class="services-container">
+            <div class="service-card reveal-up tilt-card">
+                <div class="shine-layer"></div>
+                <span class="service-icon">🎹</span>
+                <h3>تولید بیت اختصاصی</h3>
+                <p>ساخت ملودی و درام کیت‌های منحصر به فرد در سبک‌های Drill، Trap و Hip-Hop متناسب با استایل شما.</p>
+            </div>
+            <div class="service-card reveal-up tilt-card">
+                <div class="shine-layer"></div>
+                <span class="service-icon">🎚️</span>
+                <h3>میکس و مسترینگ</h3>
+                <p>استانداردسازی صدا برای پخش در پلتفرم‌های جهانی (Spotify, Apple Music) با شفافیت و قدرت بالا.</p>
+            </div>
+            <div class="service-card reveal-up tilt-card">
+                <div class="shine-layer"></div>
+                <span class="service-icon">🎙️</span>
+                <h3>ضبط و وکال تیون</h3>
+                <p>اصلاح گام وکال و افکت‌گذاری حرفه‌ای برای رسیدن به صدای مدرن و کریستالی.</p>
+            </div>
+            <div class="service-card reveal-up tilt-card">
+                <div class="shine-layer"></div>
+                <span class="service-icon">🔊</span>
+                <h3>طراحی صدا (Sound Design)</h3>
+                <p>خلق صداهای جدید و سینمایی برای تیزرهای تبلیغاتی، بازی‌ها و پروژه‌های برندینگ.</p>
+            </div>
+        </div>
+
+        <div class="est-card reveal-up">
+            <h2 style="margin-bottom: 30px; font-weight: 900;">PRICING <span class="accent-text">ESTIMATE</span></h2>
+            
+            <div class="est-option" onclick="toggleEst(this)">
+                <div>
+                    <h4 style="color: #fff;">Custom Beat</h4>
+                    <p style="font-size: 0.8rem; color: #666;">تولید آهنگسازی اختصاصی و انحصاری</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span style="font-weight: bold; color: var(--neon);">5.0M</span>
+                    <div class="custom-check"></div>
+                    <input type="checkbox" value="5000000" style="display: none;">
+                </div>
+            </div>
+
+            <div class="est-option" onclick="toggleEst(this)">
+                <div>
+                    <h4 style="color: #fff;">Stem Mix & Master</h4>
+                    <p style="font-size: 0.8rem; color: #666;">میکس لاین به لاین حرفه‌ای</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span style="font-weight: bold; color: var(--neon);">2.5M</span>
+                    <div class="custom-check"></div>
+                    <input type="checkbox" value="2500000" style="display: none;">
+                </div>
+            </div>
+
+            <div class="est-option" onclick="toggleEst(this)">
+                <div>
+                    <h4 style="color: #fff;">Vocal Tuning</h4>
+                    <p style="font-size: 0.8rem; color: #666;">تیونینگ و اصلاح گام وکال (Melodyne)</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span style="font-weight: bold; color: var(--neon);">1.2M</span>
+                    <div class="custom-check"></div>
+                    <input type="checkbox" value="1200000" style="display: none;">
+                </div>
+            </div>
+
+            <div class="est-option" onclick="toggleEst(this)">
+                <div>
+                    <h4 style="color: #fff;">Cover Art</h4>
+                    <p style="font-size: 0.8rem; color: #666;">طراحی کاور سه بعدی و مدرن</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span style="font-weight: bold; color: var(--neon);">1.8M</span>
+                    <div class="custom-check"></div>
+                    <input type="checkbox" value="1800000" style="display: none;">
+                </div>
+            </div>
+
+            <div class="total-box">
+                <span style="font-size: 0.8rem; opacity: 0.6; letter-spacing: 2px;">TOTAL INVESTMENT</span>
+                <span class="total-price" id="price-display">0</span>
+                <span style="font-size: 1rem; color: var(--neon); font-weight: bold;">TOMANS</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== WORKFLOW SECTION ==================== -->
+    <section id="roadmap">
+        <h2 class="reveal-left" style="font-size: 2.5rem; font-weight: 900;">WORK <span class="accent-text">FLOW</span></h2>
+        <div class="timeline-container reveal-up">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h4>01. کنسالت و مشاوره</h4>
+                    <p>بررسی سبک، انرژی و هدف پروژه شما در یک جلسه آنلاین یا حضوری.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h4>02. پیش‌تولید و اتود</h4>
+                    <p>ساخت ساختار اولیه (Draft) و تایید ملودی و فضای کلی اثر.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h4>03. ضبط و پردازش نهایی</h4>
+                    <p>پولیش کردن صداها، میکس نهایی و مسترینگ برای پخش جهانی.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot" style="border-color: var(--purple);"></div>
+                <div class="timeline-content">
+                    <h4>04. ریلیز و پشتیبانی</h4>
+                    <p>تحویل فایل‌های نهایی (Wave, Stems) و مشاوره برای انتشار.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== MARQUEE ==================== -->
+    <div class="marquee">
+        <div class="marquee-content">
+            <span>SONY MUSIC</span> <span>WARNER BROS</span> <span>UNIVERSAL</span> <span>808 MAFIA</span> <span>ZiZU STUDIO</span>
+            <span>SONY MUSIC</span> <span>WARNER BROS</span> <span>UNIVERSAL</span> <span>808 MAFIA</span> <span>ZiZU STUDIO</span>
+        </div>
+    </div>
+
+    <!-- ==================== GALLERY SECTION ==================== -->
+    <section id="gallery">
+        <h2 class="reveal-up" style="font-size: 2.5rem; margin-bottom: 30px;">INSIDE THE LAB</h2>
+        <div class="gallery-grid reveal-up">
+            <div class="gallery-item tilt-card"><div class="shine-layer"></div><img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?auto=format&fit=crop&w=500&q=80"></div>
+            <div class="gallery-item tilt-card"><div class="shine-layer"></div><img src="https://images.unsplash.com/photo-1559732277-7453b141e3a1?auto=format&fit=crop&w=500&q=80"></div>
+            <div class="gallery-item tilt-card"><div class="shine-layer"></div><img src="https://images.unsplash.com/photo-1525413183803-f18b6fc47285?auto=format&fit=crop&w=500&q=80"></div>
+            <div class="gallery-item tilt-card"><div class="shine-layer"></div><img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=500&q=80"></div>
+        </div>
+    </section>
+
+    <!-- ==================== LATEST DROPS ==================== -->
+    <section>
+        <h2 class="reveal-up" style="font-size: 2.5rem; margin-bottom: 30px;">LATEST DROPS</h2>
+        <div class="reveal-left tilt-card drop-card" style="border-right: 5px solid var(--neon);">
+            <div class="shine-layer"></div><h3>GHOST DRILL (2025)</h3><div class="waveform-visual"></div>
+        </div>
+        <div class="reveal-right tilt-card drop-card" style="border-right: 5px solid var(--purple);">
+            <div class="shine-layer"></div><h3>NEON LIGHTS (POP)</h3><div class="waveform-visual"></div>
+        </div>
+    </section>
+
+    <!-- ==================== TESTIMONIALS ==================== -->
+    <section>
+        <h2 class="reveal-up" style="font-size: 2.5rem; margin-bottom: 30px;">ARTISTS VOICE</h2>
+        <div class="reveal-up">
+            <div class="testi-card"><p>بیت‌های ZiZU لولِ آهنگ‌های من رو به کل عوض کرد.</p><h5>@YoungShadow</h5></div>
+            <div class="testi-card"><p>بهترین تجربه همکاری! میکس و مسترینگ عالی بود.</p><h5>@RebelArtist</h5></div>
+        </div>
+    </section>
+
+    <!-- ==================== FAQ ==================== -->
+    <section>
+        <h2 class="reveal-up" style="margin-bottom: 30px;">سوالات متداول</h2>
+        <div class="reveal-up">
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <h4>زمان تحویل بیت چقدر است؟</h4><p>بسته به پروژه، بین ۳ تا ۷ روز کاری زمان می‌برد.</p>
+            </div>
+            <div class="faq-item" onclick="this.classList.toggle('open')">
+                <h4>آیا امکان تغییر در بیت وجود دارد؟</h4><p>بله، هر سفارش شامل ۳ مرحله بازبینی رایگان است.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CONNECT ==================== -->
+    <section id="connect" style="text-align: center; margin-bottom: 100px;">
+        <h2 class="reveal-up" style="font-size: 3.5rem; margin-bottom: 40px;">CONNECT</h2>
+        <div class="gallery-grid reveal-up" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
+            <a href="#" class="social-card">INSTAGRAM</a>
+            <a href="#" class="social-card">TELEGRAM</a>
+            <a href="mailto:hi@zizu.me" class="social-card" style="background: var(--neon); color: #000;">EMAIL</a>
+        </div>
+    </section>
+
+    <!-- ==================== SCRIPTS ==================== -->
+    <script>
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const nav = document.querySelector('.mobile-nav');
+            nav.style.display = nav.style.display === 'flex' ? 'none' : 'flex';
+        }
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.mobile-nav') && !e.target.closest('.mobile-menu-btn')) {
+                document.querySelector('.mobile-nav').style.display = 'none';
+            }
+        });
+        
+        // Update active nav item on scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('section');
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            sections.forEach((section, index) => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top <= 100 && rect.bottom >= 100) {
+                    navItems.forEach(item => item.classList.remove('active'));
+                    if (navItems[index]) navItems[index].classList.add('active');
+                }
+            });
+        });
+        
+        // همه اسکریپت‌های اصلی (همون قبلی)
+        const aura = document.getElementById('aura');
+        let currentMode = 'default';
+
+        document.addEventListener('mousemove', (e) => {
+            aura.style.left = e.clientX + 'px';
+            aura.style.top = e.clientY + 'px';
+        });
+
+        function toggleEst(el) {
+            const cb = el.querySelector('input');
+            cb.checked = !cb.checked;
+            if(cb.checked) el.classList.add('selected');
+            else el.classList.remove('selected');
+            calcTotal();
+        }
+
+        function calcTotal() {
+            let total = 0;
+            document.querySelectorAll('.est-option input:checked').forEach(cb => {
+                total += parseInt(cb.value);
+            });
+            
+            const display = document.getElementById('price-display');
+            let current = parseInt(display.innerText.replace(/,/g, '')) || 0;
+            
+            let start = current;
+            let end = total;
+            let duration = 600;
+            let startTime = null;
+
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                let progress = Math.min((timestamp - startTime) / duration, 1);
+                let ease = 1 - Math.pow(1 - progress, 3);
+                let val = Math.floor(ease * (end - start) + start);
+                display.innerText = val.toLocaleString();
+                if (progress < 1) window.requestAnimationFrame(step);
+            }
+            window.requestAnimationFrame(step);
+        }
+
+        window.addEventListener('scroll', () => {
+            const scrollPos = window.pageYOffset;
+            const scrolled = (scrollPos / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            document.getElementById('scroll-progress').style.width = scrolled + '%';
+            document.querySelectorAll('[class*="reveal-"]').forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight - 50) el.classList.add('active');
+            });
+        });
+
+        const cards = document.querySelectorAll('.tilt-card');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                card.style.transform = `perspective(1000px) rotateX(${y * -10}deg) rotateY(${x * 10}deg) scale3d(1.02, 1.02, 1.02)`;
+                const shine = card.querySelector('.shine-layer');
+                if(shine) {
+                    shine.style.opacity = '1';
+                    shine.style.background = `radial-gradient(circle at ${(x+0.5)*100}% ${(y+0.5)*100}%, rgba(255,255,255,0.2), transparent)`;
+                }
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg)`;
+                if(card.querySelector('.shine-layer')) card.querySelector('.shine-layer').style.opacity = '0';
+            });
+        });
+
+        function setTheme(mode) {
+            currentMode = mode;
+            document.body.classList.remove('drill-mode', 'ambient-mode');
+
+            if(mode === 'drill') {
+                document.body.classList.add('drill-mode');
+            } else if(mode === 'ambient') {
+                document.body.classList.add('ambient-mode');
+            }
+
+            setTimeout(() => {
+                aura.style.background = `radial-gradient(circle, var(--neon) 0%, transparent 70%)`;
+            }, 10);
+        }
+
+        document.querySelectorAll('.waveform-visual').forEach(v => {
+            for(let i=0; i<30; i++) {
+                let bar = document.createElement('div');
+                bar.className = 'waveform-bar';
+                bar.style.animationDelay = (Math.random() * 1) + 's';
+                v.appendChild(bar);
+            }
+        });
+
+        // ==================== TESLA SLIDER SCRIPTS ====================
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.tesla-slide');
+        const navItems = document.querySelectorAll('.tesla-nav-item');
+        let autoSlideInterval;
+
+        function initTeslaSlider() {
+            // Create waveform bars (responsive flex distribution, no manual left offsets)
+            for(let i = 0; i < 4; i++) {
+                const waveform = document.getElementById(`waveform-${i}`);
+                if (!waveform) continue;
+
+                for(let j = 0; j < 24; j++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'tesla-waveform-bar';
+                    bar.style.animationDelay = `${j * 0.08}s`;
+                    bar.style.height = `${20 + Math.random() * 100}px`;
+                    waveform.appendChild(bar);
+                }
+            }
+            
+            // Update slide colors
+            updateSlideColors();
+            
+            // Start auto slide
+            startAutoSlide();
+            
+            // Add scroll wheel navigation
+            const sliderSection = document.querySelector('.tesla-slider-section');
+            sliderSection.addEventListener('wheel', handleSliderWheel);
+        }
+
+        function changeSlide(index) {
+            // Hide current slide
+            slides[currentSlide].classList.remove('active');
+            navItems[currentSlide].classList.remove('active');
+            
+            // Update current slide
+            currentSlide = index;
+            
+            // Show new slide
+            slides[currentSlide].classList.add('active');
+            navItems[currentSlide].classList.add('active');
+            
+            // Update colors
+            updateSlideColors();
+            
+            // Reset auto slide timer
+            resetAutoSlide();
+        }
+
+        function updateSlideColors() {
+            const activeSlide = slides[currentSlide];
+            const slideColor = activeSlide.getAttribute('data-color');
+            const slideRgb = activeSlide.getAttribute('data-rgb');
+            
+            // Update CSS variables
+            document.documentElement.style.setProperty('--slide-color', slideColor);
+            document.documentElement.style.setProperty('--slide-rgb', slideRgb);
+            
+            // Update button colors
+            const buttons = document.querySelectorAll('.tesla-button');
+            buttons.forEach(button => {
+                button.style.borderColor = slideColor;
+            });
+            
+            // Update button glow colors
+            const glows = document.querySelectorAll('.tesla-button-glow');
+            glows.forEach(glow => {
+                glow.style.background = `radial-gradient(ellipse at center, ${slideColor} 1%, transparent 80%)`;
+            });
+            
+            // Update waveform colors
+            const waveformBars = document.querySelectorAll('.tesla-waveform-bar');
+            waveformBars.forEach(bar => {
+                bar.style.background = slideColor;
+            });
+        }
+
+        function nextSlide() {
+            const nextIndex = (currentSlide + 1) % slides.length;
+            changeSlide(nextIndex);
+        }
+
+        function prevSlide() {
+            const prevIndex = (currentSlide - 1 + slides.length) % slides.length;
+            changeSlide(prevIndex);
+        }
+
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(nextSlide, 5000);
+        }
+
+        function resetAutoSlide() {
+            clearInterval(autoSlideInterval);
+            startAutoSlide();
+        }
+
+        function handleSliderWheel(e) {
+            e.preventDefault();
+            if (e.deltaY > 0) {
+                nextSlide();
+            } else if (e.deltaY < 0) {
+                prevSlide();
+            }
+        }
+
+        function orderGenre(genre) {
+            alert(`سفارش بیت ${genre.toUpperCase()} ثبت شد!\n\nبه زودی با شما برای هماهنگی‌های بیشتر تماس خواهیم گرفت.`);
+            
+            // Add to pricing estimate
+            const price = genre === 'drill' ? 5000000 : 
+                         genre === 'trap' ? 4500000 : 
+                         genre === 'hiphop' ? 4000000 : 3500000;
+            
+            // You can integrate this with the existing pricing system
+            console.log(`Genre ordered: ${genre}, Price: ${price}`);
+        }
+
+        // Animated counter for stats
+        function animateCounter(elementId, targetValue, duration = 1000) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            let start = 0;
+            const increment = targetValue / (duration / 16); // 60fps
+            
+            const timer = setInterval(() => {
+                start += increment;
+                if (start >= targetValue) {
+                    element.textContent = targetValue;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(start);
+                }
+            }, 16);
+        }
+
+        // Initialize counters when slide is visible
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const slideIndex = entry.target.getAttribute('data-slide');
+                    animateCounter(`bpm-${slideIndex}`, parseInt(entry.target.querySelector('.tesla-stat-value').textContent));
+                }
+            });
+        }, { threshold: 0.5 });
+
+        slides.forEach(slide => {
+            observer.observe(slide);
+        });
+
+        // Initialize slider when page loads
+        document.addEventListener('DOMContentLoaded', initTeslaSlider);
+
+        // Touch support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.querySelector('.tesla-slider-section').addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.querySelector('.tesla-slider-section').addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe left - next slide
+                    nextSlide();
+                } else {
+                    // Swipe right - previous slide
+                    prevSlide();
+                }
+            }
+        }
+
+        window.dispatchEvent(new Event('scroll'));
+        
+        // اسکریپت‌های اضافه برای موبایل
+        function handleTouchEvents() {
+            // بهبود عملکرد لمسی
+            document.querySelectorAll('.tilt-card').forEach(card => {
+                card.addEventListener('touchstart', (e) => {
+                    card.classList.add('touching');
+                    setTimeout(() => card.classList.remove('touching'), 300);
+                });
+            });
+            
+            // جلوگیری از زوم دوبار ضربه
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', (e) => {
+                const now = (new Date()).getTime();
+                if (now - lastTouchEnd <= 300) {
+                    e.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+        }
+        
+        // Initialize mobile features
+        if ('ontouchstart' in window) {
+            handleTouchEvents();
+        }
+        
+        // Adjust for mobile viewport
+        function adjustViewport() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        
+        window.addEventListener('resize', adjustViewport);
+        window.addEventListener('orientationchange', adjustViewport);
+        adjustViewport();
+
+        // ============================================================
+        // STORY MODE — منطق کامل استوری‌های تمام‌صفحه
+        // ============================================================
+        const storyData = [
+            {
+                eyebrow: 'STUDIO',
+                title: 'PURE\nENERGY',
+                desc: 'طراحی فرکانس‌هایی که برند شما را به صدا در می‌آورند. استودیوی الیت ZiZU، جایی که ایده به بیت تبدیل می‌شود.',
+                stats: [ { v: '150+', l: 'پروژه' }, { v: '24h', l: 'پاسخ‌گویی' }, { v: '4.9', l: 'رضایت' } ],
+                cta: 'شروع کن ↓'
+            },
+            {
+                eyebrow: 'SIGNATURE GENRE',
+                title: 'DARK\nDRILL',
+                desc: 'سمپل‌های مینیمال، کیک‌های قدرتمند، بیس لاین‌های فراگیر. مناسب ترک‌های خیابانی و وایب‌های شهری.',
+                stats: [ { v: '140', l: 'BPM' }, { v: '3', l: 'روز تحویل' }, { v: '95%', l: 'پیچیدگی' } ],
+                cta: 'سفارش بیت DRILL'
+            },
+            {
+                eyebrow: 'SIGNATURE GENRE',
+                title: 'NEON\nTRAP',
+                desc: 'لیدهای سینثوی براق همراه با 808های قدرتمند و هت‌های تند. فضای آینده‌نگرانه و انرژی بالا.',
+                stats: [ { v: '150', l: 'BPM' }, { v: '4', l: 'روز تحویل' }, { v: '88%', l: 'پیچیدگی' } ],
+                cta: 'سفارش بیت TRAP'
+            },
+            {
+                eyebrow: 'خدمات استودیو',
+                title: 'MIX &\nMASTER',
+                desc: 'استانداردسازی صدا برای پخش در پلتفرم‌های جهانی با شفافیت و قدرت بالا. وکال تیون و ساند دیزاین اختصاصی.',
+                stats: [ { v: '4', l: 'خدمت اصلی' }, { v: '3x', l: 'بازبینی رایگان' }, { v: '100%', l: 'کیفیت' } ],
+                cta: 'دیدن خدمات ↓'
+            },
+            {
+                eyebrow: 'همکاری با',
+                title: 'TRUSTED\nBY ARTISTS',
+                desc: 'از استودیوهای بزرگ تا هنرمندان مستقل؛ ZiZU پشت صحنه‌ی بسیاری از ترک‌های ماندگار بوده.',
+                stats: [ { v: '808', l: 'MAFIA' }, { v: 'SONY', l: 'MUSIC' }, { v: 'UMG', l: 'PARTNER' } ],
+                cta: 'شروع پروژه'
+            },
+            {
+                eyebrow: 'همین حالا',
+                title: 'LET\'S\nCREATE',
+                desc: 'آماده‌ای صدای بعدی‌ت رو بسازیم؟ با دستیار هوشمند سفارش، در چند ثانیه پیش‌فاکتور بگیر.',
+                stats: [ { v: '3', l: 'روز حداقل' }, { v: '5.0M', l: 'شروع قیمت' }, { v: '★★★★★', l: 'تضمین کیفیت' } ],
+                cta: 'باز کردن چت سفارش'
+            }
+        ];
+
+        let storyIndex = 0;
+        let storyTimer = null;
+        let storyProgressStart = null;
+        const STORY_DURATION = 6000;
+        let storyBuilt = false;
+        let storyTouchStartX = 0;
+
+        function buildStorySlides() {
+            const track = document.getElementById('story-track');
+            const progressBar = document.getElementById('story-progress-bar');
+            track.innerHTML = '';
+            progressBar.innerHTML = '';
+
+            storyData.forEach((slide, i) => {
+                const seg = document.createElement('div');
+                seg.className = 'story-progress-seg';
+                seg.innerHTML = '<div class="story-progress-fill"></div>';
+                progressBar.appendChild(seg);
+
+                const el = document.createElement('div');
+                el.className = 'story-slide';
+                el.dataset.index = i;
+
+                const titleLines = slide.title.split('\n').map((line, li) =>
+                    `<span style="display:block;${li === 1 ? 'color:var(--neon);text-shadow:0 0 30px var(--neon);' : ''}">${line}</span>`
+                ).join('');
+
+                let particlesHtml = '';
+                for (let p = 0; p < 14; p++) {
+                    const size = 2 + Math.random() * 4;
+                    const left = Math.random() * 100;
+                    const dur = 4 + Math.random() * 5;
+                    const delay = Math.random() * 5;
+                    particlesHtml += `<div class="story-particle" style="width:${size}px;height:${size}px;left:${left}%;bottom:0;animation-duration:${dur}s;animation-delay:${delay}s;"></div>`;
+                }
+
+                el.innerHTML = `
+                    <div class="story-slide-bg-glow"></div>
+                    <div class="story-particles">${particlesHtml}</div>
+                    <div class="story-slide-label">${String(i + 1).padStart(2, '0')} / ${String(storyData.length).padStart(2, '0')}</div>
+                    <div class="story-slide-content">
+                        <span class="story-eyebrow">${slide.eyebrow}</span>
+                        <h2 class="story-title">${titleLines}</h2>
+                        <p class="story-desc">${slide.desc}</p>
+                        <div class="story-stats-row">
+                            ${slide.stats.map(s => `<div class="story-stat"><b>${s.v}</b><span>${s.l}</span></div>`).join('')}
+                        </div>
+                        <button class="story-cta" onclick="storyCtaAction(${i})">${slide.cta} </button>
+                    </div>
+                `;
+                track.appendChild(el);
+            });
+            storyBuilt = true;
+        }
+
+        function openStoryMode() {
+            if (!storyBuilt) buildStorySlides();
+            document.getElementById('story-mode').classList.add('open');
+            document.body.style.overflow = 'hidden';
+            storyIndex = 0;
+            renderStory();
+        }
+
+        function closeStoryMode() {
+            document.getElementById('story-mode').classList.remove('open');
+            document.body.style.overflow = '';
+            clearStoryTimer();
+        }
+
+        function renderStory() {
+            const track = document.getElementById('story-track');
+            track.style.transform = `translateX(${storyIndex * 100}%)`;
+
+            document.querySelectorAll('.story-slide').forEach((s, i) => {
+                s.classList.toggle('animate-in', i === storyIndex);
+            });
+
+            document.querySelectorAll('.story-progress-seg').forEach((seg, i) => {
+                seg.classList.remove('done');
+                const fill = seg.querySelector('.story-progress-fill');
+                fill.style.transition = 'none';
+                fill.style.width = '0%';
+                if (i < storyIndex) {
+                    seg.classList.add('done');
+                }
+            });
+
+            clearStoryTimer();
+            startStoryProgress();
+        }
+
+        function startStoryProgress() {
+            const segs = document.querySelectorAll('.story-progress-seg');
+            const currentFill = segs[storyIndex].querySelector('.story-progress-fill');
+            requestAnimationFrame(() => {
+                currentFill.style.transition = `width ${STORY_DURATION}ms linear`;
+                currentFill.style.width = '100%';
+            });
+            storyTimer = setTimeout(() => storyNext(), STORY_DURATION);
+        }
+
+        function clearStoryTimer() {
+            if (storyTimer) clearTimeout(storyTimer);
+        }
+
+        function storyNext() {
+            if (storyIndex < storyData.length - 1) {
+                storyIndex++;
+                renderStory();
+            } else {
+                closeStoryMode();
+            }
+        }
+
+        function storyPrev() {
+            if (storyIndex > 0) {
+                storyIndex--;
+                renderStory();
+            } else {
+                clearStoryTimer();
+                startStoryProgress();
+            }
+        }
+
+        function storyCtaAction(i) {
+            closeStoryMode();
+            if (i === storyData.length - 1) {
+                setTimeout(openChat, 350);
+            } else if (i === 0) {
+                document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
+            } else if (i === 3) {
+                document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                setTimeout(openChat, 350);
+            }
+        }
+
+        // سواپ لمسی برای استوری
+        const storyModeEl = document.getElementById('story-mode');
+        storyModeEl.addEventListener('touchstart', (e) => {
+            storyTouchStartX = e.changedTouches[0].screenX;
+            clearStoryTimer();
+        }, { passive: true });
+
+        storyModeEl.addEventListener('touchend', (e) => {
+            const endX = e.changedTouches[0].screenX;
+            const diff = storyTouchStartX - endX;
+            if (Math.abs(diff) > 40) {
+                if (diff > 0) storyPrev(); else storyNext(); // RTL: swipe راست به چپ = قبلی است چون جهت متن معکوس
+            } else {
+                startStoryProgress();
+            }
+        }, { passive: true });
+
+        // ============================================================
+        // چت‌بات سفارش‌گیر ELITE A&R
+        // ============================================================
+        const genrePricing = {
+            drill: { name: 'DARK DRILL', base: 5000000, bpm: '140', delivery: '3 روز' },
+            trap:  { name: 'NEON TRAP', base: 4500000, bpm: '150', delivery: '4 روز' },
+            hiphop:{ name: 'BOOM BAP HIP-HOP', base: 4000000, bpm: '95', delivery: '5 روز' },
+            pop:   { name: 'SYNTHWAVE POP', base: 3500000, bpm: '128', delivery: '6 روز' }
+        };
+
+        let chatState = {};
+
+        function resetChatState() {
+            chatState = { genre: null, mixMaster: null, vocal: null, cover: null, step: 0 };
+        }
+        resetChatState();
+
+        function openChat() {
+            document.getElementById('chat-window').classList.add('open');
+            document.getElementById('chat-fab').style.display = 'none';
+            document.body.style.overflow = 'hidden';
+            if (document.getElementById('chat-body').children.length === 0) {
+                startChatFlow();
+            }
+        }
+
+        function closeChat() {
+            document.getElementById('chat-window').classList.remove('open');
+            document.getElementById('chat-fab').style.display = 'flex';
+            document.body.style.overflow = '';
+        }
+
+        function restartChat() {
+            document.getElementById('chat-body').innerHTML = '';
+            document.getElementById('chat-footer').style.display = 'none';
+            resetChatState();
+            startChatFlow();
+        }
+
+        function chatScroll() {
+            const body = document.getElementById('chat-body');
+            body.scrollTop = body.scrollHeight;
+        }
+
+        function addBotMsg(text, delay = 700) {
+            return new Promise(resolve => {
+                const body = document.getElementById('chat-body');
+                const typing = document.createElement('div');
+                typing.className = 'chat-typing';
+                typing.innerHTML = '<span></span><span></span><span></span>';
+                body.appendChild(typing);
+                chatScroll();
+
+                setTimeout(() => {
+                    typing.remove();
+                    const msg = document.createElement('div');
+                    msg.className = 'chat-msg bot';
+                    msg.innerText = text;
+                    body.appendChild(msg);
+                    chatScroll();
+                    resolve();
+                }, delay);
+            });
+        }
+
+        function addUserMsg(text) {
+            const body = document.getElementById('chat-body');
+            const msg = document.createElement('div');
+            msg.className = 'chat-msg user';
+            msg.innerText = text;
+            body.appendChild(msg);
+            chatScroll();
+        }
+
+        function addOptions(options, onPick) {
+            return new Promise(resolve => {
+                const body = document.getElementById('chat-body');
+                const wrap = document.createElement('div');
+                wrap.className = 'chat-options';
+                options.forEach((opt, i) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'chat-option-btn';
+                    btn.style.animationDelay = (i * 0.06) + 's';
+                    btn.innerText = opt.label;
+                    btn.onclick = () => {
+                        wrap.querySelectorAll('button').forEach(b => b.disabled = true);
+                        wrap.style.opacity = '0.4';
+                        wrap.style.pointerEvents = 'none';
+                        addUserMsg(opt.label);
+                        onPick(opt.value);
+                        resolve();
+                    };
+                    wrap.appendChild(btn);
+                });
+                body.appendChild(wrap);
+                chatScroll();
+            });
+        }
+
+        async function startChatFlow() {
+            await addBotMsg('سلام! 👋 من دستیار سفارش استودیو ZiZU هستم.');
+            await addBotMsg('بریم چند سوال کوتاه بپرسم تا دقیقاً بفهمم چی می‌خوای و یه پیش‌فاکتور آماده کنم.', 900);
+            await addBotMsg('اول بگو دنبال چه سبکی هستی؟');
+            await addOptions([
+                { label: '🔥 دارک دریل', value: 'drill' },
+                { label: '⚡ نئون ترپ', value: 'trap' },
+                { label: '🎙️ بوم‌بپ هیپ‌هاپ', value: 'hiphop' },
+                { label: '🌈 سینثویو پاپ', value: 'pop' }
+            ], v => chatState.genre = v);
+
+            const g = genrePricing[chatState.genre];
+            await addBotMsg(`عالیه، انتخاب خفنیه! ${g.name} دقیقاً روی ${g.bpm} BPM کار می‌شه و معمولاً ${g.delivery} کاری زمان می‌بره. 🎧`, 800);
+
+            await addBotMsg('میکس و مسترینگ حرفه‌ای هم لازم داری؟');
+            await addOptions([
+                { label: '✅ بله، می‌خوام', value: true },
+                { label: '❌ فعلاً نه', value: false }
+            ], v => chatState.mixMaster = v);
+
+            await addBotMsg('وکال تیون و اصلاح گام هم می‌خوای اضافه بشه؟');
+            await addOptions([
+                { label: '✅ بله', value: true },
+                { label: '❌ نه', value: false }
+            ], v => chatState.vocal = v);
+
+            await addBotMsg('یه کاور آرت سه‌بعدی و مدرن هم برات طراحی کنیم؟');
+            await addOptions([
+                { label: '🎨 آره حتماً', value: true },
+                { label: '⏭️ نه، رد شو', value: false }
+            ], v => chatState.cover = v);
+
+            await addBotMsg('عالی بود! این خلاصه‌ی سفارشته 👇', 700);
+            showChatSummary();
+        }
+
+        function showChatSummary() {
+            const g = genrePricing[chatState.genre];
+            let total = g.base;
+            const rows = [`<div class="summary-row"><span>بیت اختصاصی (${g.name})</span><b>${g.base.toLocaleString()}</b></div>`];
+
+            if (chatState.mixMaster) {
+                total += 2500000;
+                rows.push(`<div class="summary-row"><span>میکس و مسترینگ</span><b>2,500,000</b></div>`);
+            }
+            if (chatState.vocal) {
+                total += 1200000;
+                rows.push(`<div class="summary-row"><span>وکال تیونینگ</span><b>1,200,000</b></div>`);
+            }
+            if (chatState.cover) {
+                total += 1800000;
+                rows.push(`<div class="summary-row"><span>کاور آرت سه‌بعدی</span><b>1,800,000</b></div>`);
+            }
+
+            chatState.total = total;
+
+            const body = document.getElementById('chat-body');
+            const summary = document.createElement('div');
+            summary.className = 'chat-msg summary';
+            summary.innerHTML = `
+                <div class="summary-title">پیش‌فاکتور سفارش شما</div>
+                ${rows.join('')}
+                <div class="summary-total">
+                    <span style="font-size:0.75rem;color:#888;">مجموع تخمینی</span>
+                    <b>${total.toLocaleString()} <span style="font-size:0.9rem;">تومان</span></b>
+                </div>
+            `;
+            body.appendChild(summary);
+            chatScroll();
+
+            document.getElementById('chat-footer').style.display = 'flex';
+        }
+
+        function finalizeChatOrder() {
+            const g = genrePricing[chatState.genre];
+            addUserMsg('تایید می‌کنم، سفارش رو ثبت کن ✅');
+            addBotMsg(`ثبت شد! 🎉 سفارش ${g.name} به مبلغ ${chatState.total.toLocaleString()} تومان دریافت شد. تیم ما تا چند ساعت آینده برای هماهنگی نهایی باهات تماس می‌گیره.`, 800);
+            document.getElementById('chat-footer').style.display = 'none';
+        }
+
+        // اتصال ژانرهای اسلایدر تسلا به عنوان میانبر سریع چت (تجربه یکپارچه)
+        window.quickOrderFromSlider = function(genre) {
+            resetChatState();
+            chatState.genre = genre;
+            openChat();
+        };
+    </script>
+</body>
+</html>
